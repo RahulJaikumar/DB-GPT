@@ -133,6 +133,15 @@ def _initialize_db(
             f"{db_name}?charset=utf8mb4"
         )
         _create_mysql_database(db_name, db_url, try_to_create_db)
+    elif CFG.LOCAL_DB_TYPE == DBType.Postgresql.value():
+        db_url = (
+            f"postgresql+psycopg2://{quote(CFG.LOCAL_DB_USER)}:"
+            f"{urlquote(CFG.LOCAL_DB_PASSWORD)}@"
+            f"{CFG.LOCAL_DB_HOST}:"
+            f"{str(CFG.LOCAL_DB_PORT)}/"
+            f"{db_name}"
+        )
+        _create_mysql_database(db_name, db_url, try_to_create_db)
     else:
         sqlite_db_path = os.path.join(default_meta_data_path, f"{db_name}.db")
         db_url = f"sqlite:///{sqlite_db_path}"
@@ -168,7 +177,12 @@ def _create_mysql_database(db_name: str, db_url: str, try_to_create_db: bool = F
     if not try_to_create_db:
         logger.info(f"Skipping creation of database {db_name}")
         return
-    engine = create_engine(db_url)
+    CFG = Config()
+    if CFG.LOCAL_DB_TYPE == DBType.Postgresql.value():
+        engine = create_engine(db_url, connect_args={'client_encoding': 'utf8'})
+
+    else:
+        engine = create_engine(db_url)
 
     try:
         # Try to connect to the database
@@ -286,3 +300,4 @@ class WebServerParameters(BaseServerParameters):
             "use default config of python thread pool",
         },
     )
+

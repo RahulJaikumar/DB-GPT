@@ -17,26 +17,81 @@ _PROMPT_SCENE_DEFINE_EN = "You are a database expert. "
 _PROMPT_SCENE_DEFINE_ZH = "你是一个数据库专家. "
 
 _DEFAULT_TEMPLATE_EN = """
-Please answer the user's question based on the database selected by the user and some of the available table structure definitions of the database.
-Database name:
-     {db_name}
-Table structure definition:
-     {table_info}
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
 
-Constraint:
-    1.Please understand the user's intention based on the user's question, and use the given table structure definition to create a grammatically correct {dialect} sql. If sql is not required, answer the user's question directly.. 
-    2.Always limit the query to a maximum of {top_k} results unless the user specifies in the question the specific number of rows of data he wishes to obtain.
-    3.You can only use the tables provided in the table structure information to generate sql. If you cannot generate sql based on the provided table structure, please say: "The table structure information provided is not enough to generate sql queries." It is prohibited to fabricate information at will.
-    4.Please be careful not to mistake the relationship between tables and columns when generating SQL.
-    5.Please check the correctness of the SQL and ensure that the query performance is optimized under correct conditions.
-    6.Please choose the best one from the display methods given below for data rendering, and put the type name into the name parameter value that returns the required format. If you cannot find the most suitable one, use 'Table' as the display method. , the available data display methods are as follows: {display_type}
-    
-User Question:
-    {user_input}
-Please think step by step and respond according to the following JSON format:
-    {response}
-Ensure the response is correct json and can be parsed by Python json.loads.
+Generate a SQL query to answer this question: `{user_input}`
+{response}
 
+DDL statements:
+CREATE TABLE IF NOT EXISTS "workload_runs" (
+	"workload_run_id"	BIGINT NOT NULL, -- Primary Key of the table
+	"platform"	TEXT NOT NULL, -- Also known as Microarchitecture. Always use ILIKE operator for this column
+	"workload_name"	TEXT NOT NULL, -- Always Use ILIKE operator, known as workload name
+	"workload_category"	TEXT NOT NULL, -- Also known as Domain
+    "workload_subcategory"	TEXT,
+	"primary_kpi_name"	TEXT NOT NULL, -- Also known as kpi_metric
+	"primary_kpi_value"	FLOAT, -- Also known as Value
+	PRIMARY KEY("workload_run_id")
+);
+
+CREATE TABLE IF NOT EXISTS "software_configuration" (
+	"workload_run_id"	BIGINT NOT NULL, -- Foreign key which references to table workload runs
+	"software_config_name"	TEXT NOT NULL,  -- Key to be considered. also known as Software configuration or Ingredient
+	"software_config_value"	TEXT, -- Value of software_config_name.
+	PRIMARY KEY("workload_run_id","software_config_name"),
+	FOREIGN KEY("workload_run_id") REFERENCES "workload_runs"("workload_run_id")
+);
+
+CREATE TABLE IF NOT EXISTS "edp" (
+	"workload_run_id"	BIGINT NOT NULL, -- Foreign key which references to table workload runs
+	"metric_name"	TEXT NOT NULL, -- Also known as emon metric name or edp metric or edp event name. Always use ILIKE operator for this column. Some metric names like metric_package power are also called as package power.
+	"metric_value"	FLOAT, -- value to be considered
+	PRIMARY KEY("workload_run_id","metric_name"),
+	FOREIGN KEY("workload_run_id") REFERENCES "workload_runs"("workload_run_id")
+) COMMNENT ON TABLE "Also known as Emon Events";
+
+CREATE TABLE IF NOT EXISTS "tuning_parameters" (
+	"workload_run_id"	BIGINT NOT NULL, -- Foreign key which references to table workload runs
+	"tuning_parameter_name"	TEXT NOT NULL, -- Key to be considered. also known as Tuning parameter
+	"tuning_parameter_value"	TEXT,  -- Value of tuning_parameter_name.
+	PRIMARY KEY("workload_run_id","tuning_parameter_name"),
+	FOREIGN KEY("workload_run_id") REFERENCES "workload_runs"("workload_run_id")
+);
+
+CREATE TABLE IF NOT EXISTS "instructions" (
+	"workload_name"	TEXT NOT NULL,  -- Also known as workload name
+	"platform"	TEXT NOT NULL, -- Also known as microarchitecture
+	"workload_category"	TEXT, -- Also known as Domain
+	"release_version"	TEXT NOT NULL, -- Release version of the particular workload
+	"instruction_name"	TEXT NOT NULL, -- Also known as instruction or instruction name that is captured during workload run or execution
+	"instruction_frequency"	FLOAT NOT NULL, -- Total count of instruction_name that was used in the worklaod run or execution
+	PRIMARY KEY("workload_name","platform","release_version","instruction_name")
+);
+
+CREATE TABLE IF NOT EXISTS "platform_info" (
+	"workload_run_id"	BIGINT NOT NULL, -- Foreign key which references to table workload runs
+	"cpus"	INTEGER NOT NULL, -- Total number of CPU's
+	"core_count"	INTEGER NOT NULL, -- Total number of cores in the CPU
+	"core_frequency_ghz"	FLOAT NOT NULL, -- Frequency in Ghz for the corresponding CPU
+	"epb_bios"	TEXT, -- also known as Bios version
+	"hyperthreading"	BOOL, -- Hyperthreading value. Hyperthreading is enabled if value is true and disabled if value is false
+	"l2c_size_mb"	FLOAT, -- also known as level 2 cache or secondary cache value
+	"llc_size_mb"	FLOAT, -- known as llc size or last level cache value
+	"power"	TEXT,
+	"snc_mode"	INTEGER, -- Sub numa cluster mode
+	"sockets"	INTEGER, -- Number of sockets 
+	"uncore_frequency"	TEXT,
+	"memory_speed_mt_s"	INTEGER, -- Memory speed in Milliontransfer per second.
+	"workload_name"	TEXT,  -- Known as workload name
+	"workload_category"	TEXT, -- Also known as Domain
+	"platform"	TEXT, -- Also known as microarchitecture
+	PRIMARY KEY("workload_run_id"),
+	FOREIGN KEY("workload_run_id") REFERENCES "workload_runs"("workload_run_id")
+);
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The following SQL query best answers the question `{user_input}`:
+```sql
 """
 
 _DEFAULT_TEMPLATE_ZH = """
