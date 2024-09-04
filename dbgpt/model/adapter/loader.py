@@ -147,6 +147,8 @@ def huggingface_loader(llm_adapter: LLMModelAdapter, model_params: ModelParamete
 
     if device == "cpu":
         kwargs = {"torch_dtype": torch.float32}
+    elif device == "hpu":
+        kwargs = {"torch_dtype": torch.bfloat16}
     elif device == "cuda":
         kwargs = {"torch_dtype": torch.float16}
         num_gpus = torch.cuda.device_count()
@@ -224,7 +226,7 @@ def _try_load_default_quantization_model(
     cloned_kwargs = {k: v for k, v in kwargs.items()}
     try:
         model, tokenizer = None, None
-        if device != "cuda":
+        if device != "cuda" and device != "hpu":
             return None, None
         elif model_params.load_8bit and llm_adapter.support_8bit:
             cloned_kwargs["load_in_8bit"] = True
@@ -253,9 +255,11 @@ def _handle_model_and_tokenizer(
     if (
         (device == "cuda" and num_gpus == 1 and not model_params.cpu_offloading)
         or device == "mps"
+        or device == "hpu"
         and tokenizer
     ):
         try:
+            logger.warning(f"-----------------------------Device: {device}-----------------------------------")
             model.to(device)
         except ValueError:
             pass
