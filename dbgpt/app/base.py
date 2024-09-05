@@ -152,6 +152,7 @@ def _initialize_db(
         "pool_recycle": 3600,
         "pool_pre_ping": True,
     }
+    print("===================================DB URL " + db_url + "=================================")
     db = initialize_db(db_url, db_name, engine_args)
     if system_app:
         from dbgpt.storage.metadata import UnifiedDBManagerFactory
