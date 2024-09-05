@@ -70,9 +70,11 @@ class DBSummaryClient:
         """Initialize db summary profile."""
         db_mange = CFG.local_db_manager
         dbs = db_mange.get_db_list()
+        logger.info("================DB List: " + dbs + "=============================================")
         for item in dbs:
             try:
                 self.db_summary_embedding(item["db_name"], item["db_type"])
+                logger.info("================DB List Item: " + item + "=============================================")
             except Exception as e:
                 message = traceback.format_exc()
                 logger.warn(
