@@ -154,6 +154,9 @@ def _initialize_db(
     }
     logger.info("===================================DB URL " + db_url + "=================================")
     db = initialize_db(db_url, db_name, engine_args)
+    print("=====================================================")
+    print(db)
+    print("=====================================================")
     if system_app:
         from dbgpt.storage.metadata import UnifiedDBManagerFactory
 

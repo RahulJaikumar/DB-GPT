@@ -294,6 +294,9 @@ class DatabaseManager:
             session_options (Optional[Dict], optional): The session options. Defaults
                 to None.
         """
+        print("================================= DB URL in INIT =============================")
+        print(db_url)
+        print(session_options)
         if session_options is None:
             session_options = {}
         self._db_url = db_url
