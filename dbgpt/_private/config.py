@@ -183,6 +183,7 @@ class Config(metaclass=Singleton):
         self.LOCAL_DB_TYPE = os.getenv("LOCAL_DB_TYPE", "sqlite")
         if self.LOCAL_DB_HOST is None and self.LOCAL_DB_PATH == "":
             self.LOCAL_DB_HOST = "127.0.0.1"
+        print("*******************Db Host : "+self.LOCAL_DB_HOST + "*******************")
 
         self.LOCAL_DB_NAME = os.getenv("LOCAL_DB_NAME", "dbgpt")
         self.LOCAL_DB_PORT = int(os.getenv("LOCAL_DB_PORT", 3306))
