@@ -147,8 +147,8 @@ def huggingface_loader(llm_adapter: LLMModelAdapter, model_params: ModelParamete
 
     if device == "cpu":
         kwargs = {"torch_dtype": torch.float32}
-    elif device == "hpu":
-        kwargs = {"torch_dtype": torch.bfloat16}
+    # elif device == "hpu":
+    #     kwargs = {"torch_dtype": torch.bfloat16}
     elif device == "cuda":
         kwargs = {"torch_dtype": torch.float16}
         num_gpus = torch.cuda.device_count()
@@ -252,6 +252,7 @@ def _try_load_default_quantization_model(
 def _handle_model_and_tokenizer(
     model, tokenizer, device: str, num_gpus: int, model_params: ModelParameters
 ):
+    print(f"============================== Device : {device}   {num_gpus}===========================")
     if (
         (device == "cuda" and num_gpus == 1 and not model_params.cpu_offloading)
         or device == "mps"
