@@ -26,16 +26,27 @@ current_directory = os.getcwd()
 def get_device() -> str:
     try:
         import torch
-
+        import habana_frameworks.torch.core as htcore
+        hpu_device_name = torch.device("hpu")
+        print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu")
+        #print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+        #return (
+        #     "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+        #)
         return (
-            "cuda"
-            if torch.cuda.is_available()
-            else "mps"
-            if torch.backends.mps.is_available()
-            else "cpu"
+            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu"
         )
     except ModuleNotFoundError:
         return "cpu"
+#        return (
+#            "cuda"
+#            if torch.cuda.is_available()
+#            else "mps"
+#            if torch.backends.mps.is_available()
+#            else "cpu"
+#        )
+#    except ModuleNotFoundError:
+#        return "cpu"
 
 
 LLM_MODEL_CONFIG = {
@@ -86,6 +97,7 @@ LLM_MODEL_CONFIG = {
     "meta-llama-3-8b-instruct": os.path.join(MODEL_PATH, "Meta-Llama-3-8B-Instruct"),
     # https://huggingface.co/meta-llama/Meta-Llama-3-70B-Instruct
     "meta-llama-3-70b-instruct": os.path.join(MODEL_PATH, "Meta-Llama-3-70B-Instruct"),
+    "meta-llama-3-70b-instruct-quantized": os.path.join(MODEL_PATH, "Meta-Llama-3.1-70B-Instruct-quantized.w4a16"),
     "meta-llama-3.1-8b-instruct": os.path.join(
         MODEL_PATH, "Meta-Llama-3.1-8B-Instruct"
     ),
@@ -94,6 +106,9 @@ LLM_MODEL_CONFIG = {
     ),
     "meta-llama-3.1-405b-instruct": os.path.join(
         MODEL_PATH, "Meta-Llama-3.1-405B-Instruct"
+    ),
+     "meta-llama-3.1-70b": os.path.join(
+        MODEL_PATH, "Meta-Llama-3.1-70B"
     ),
     "baichuan-13b": os.path.join(MODEL_PATH, "Baichuan-13B-Chat"),
     # please rename "fireballoon/baichuan-vicuna-chinese-7b" to "baichuan-7b"
@@ -276,6 +291,7 @@ EMBEDDING_MODEL_CONFIG = {
     # https://huggingface.co/BAAI/bge-large-en
     "bge-large-en": os.path.join(MODEL_PATH, "bge-large-en"),
     "bge-base-en": os.path.join(MODEL_PATH, "bge-base-en"),
+    "bge-large-en-v1.5": os.path.join(MODEL_PATH, "bge-large-en-v1.5"),
     # https://huggingface.co/BAAI/bge-large-zh
     "bge-large-zh": os.path.join(MODEL_PATH, "bge-large-zh"),
     "bge-base-zh": os.path.join(MODEL_PATH, "bge-base-zh"),
