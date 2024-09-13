@@ -36,7 +36,15 @@ def get_device() -> str:
             "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu"
         )
     except ModuleNotFoundError:
-        return "cpu"
+        import torch
+        print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu")
+        #print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+        #return (
+        #     "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+        #)
+        return (
+            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu"
+        )
 #        return (
 #            "cuda"
 #            if torch.cuda.is_available()
