@@ -28,32 +28,15 @@ def get_device() -> str:
         import habana_frameworks.torch.core as htcore
         hpu_device_name = torch.device("hpu")
         print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu")
-        #print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-        #return (
-        #     "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-        #)
         return (
             "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu"
         )
     except ModuleNotFoundError:
         import torch
-        print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu")
-        #print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-        #return (
-        #     "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-        #)
+        print("get_device------------", "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")       
         return (
-            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "hpu" if hpu_device_name else "cpu"
+            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
         )
-#        return (
-#            "cuda"
-#            if torch.cuda.is_available()
-#            else "mps"
-#            if torch.backends.mps.is_available()
-#            else "cpu"
-#        )
-#    except ModuleNotFoundError:
-#        return "cpu"
 
 
 LLM_MODEL_CONFIG = {
