@@ -191,7 +191,7 @@ class ChatHistoryDao(BaseDao):
     INNER JOIN chat_history_message b on a.conv_uid = b.conv_uid
     INNER JOIN gpts_app c ON a.app_code = c.app_code and c.published = 'true'
     GROUP BY c.app_code
-    ORDER BY sz desc  LIMIT {str(skip_page)}, {str(top_k)};"""
+    ORDER BY sz desc  OFFSET {str(skip_page)} LIMIT {str(top_k)};"""
                     )
                 )
                 keys = result.keys()
